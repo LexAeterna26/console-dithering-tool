@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/LexAeterna26/console-dithering-tool/internal/processor"
 )
@@ -60,6 +61,14 @@ func isImage(p string) bool {
 	return false
 }
 
+func GetDestination(dest, nameExt, suffix string) string {
+	ext := filepath.Ext(nameExt)
+	name := strings.TrimSuffix(nameExt, ext)
+	suffName := name + suffix + ext
+	path := filepath.Join(dest, suffName)
+	return path
+}
+
 func GetData() ([]Path, processor.ImgConf, error) {
 	flag.Parse()
 
@@ -105,7 +114,8 @@ func GetData() ([]Path, processor.ImgConf, error) {
 				if err != nil {
 					return nil, nil, fmt.Errorf("Source file %s absolute path error. %s", file.Name(), err)
 				}
-				paths = append(paths, Path{sourceAbs, destAbs})
+				newDestination := GetDestination(destAbs, file.Name(), suffix)
+				paths = append(paths, Path{sourceAbs, newDestination})
 			}
 		}
 		if len(paths) == 0 {
@@ -117,7 +127,8 @@ func GetData() ([]Path, processor.ImgConf, error) {
 			if err != nil {
 				return nil, nil, fmt.Errorf("Source file absolute path error. %s", err)
 			}
-			paths = append(paths, Path{sourceAbs, destAbs})
+			newDestination := GetDestination(destAbs, source, suffix)
+			paths = append(paths, Path{sourceAbs, newDestination})
 		} else {
 			return nil, nil, fmt.Errorf("Source file is not an image. %s", err)
 		}
