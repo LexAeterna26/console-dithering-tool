@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/LexAeterna26/console-dithering-tool/internal/processor"
+	"github.com/LexAeterna26/console-dithering-tool/internal/validator"
 )
 
 type Path struct {
@@ -101,6 +102,10 @@ func GetData() ([]Path, processor.ImgConf, error) {
 		}
 	}
 
+	if !validator.ValidateSuffix(suffix) {
+		return nil, nil, errors.New("Wrong suffix value")
+	}
+
 	var paths []Path
 	if sourceInfo.IsDir() {
 		sourceFiles, err := os.ReadDir(source)
@@ -138,12 +143,12 @@ func GetData() ([]Path, processor.ImgConf, error) {
 	var conf processor.ImgConf
 	switch funcType {
 	case "threshold":
-		if threshold > 255 || threshold < 0 {
+		if !validator.ValidateThreshold(threshold) {
 			return nil, nil, errors.New("Wrong threshold value")
 		}
 		conf = processor.NewThresholdConf(threshold)
 	case "bayer":
-		if !(matrixSize == 2 || matrixSize == 4 || matrixSize == 8 || matrixSize == 16) {
+		if !validator.ValidateMatrixSize(matrixSize) {
 			return nil, nil, errors.New("Wrong bayer matrix size")
 		}
 		conf = processor.NewBayerConf(matrixSize)
