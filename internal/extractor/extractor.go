@@ -12,11 +12,6 @@ import (
 	"github.com/LexAeterna26/console-dithering-tool/internal/validator"
 )
 
-type Path struct {
-	source      string
-	destination string
-}
-
 var (
 	source      string
 	destination string
@@ -70,7 +65,7 @@ func GetDestination(dest, nameExt, suffix string) string {
 	return path
 }
 
-func GetData() ([]Path, processor.ImgConf, error) {
+func GetData() ([]processor.Path, processor.ImgConf, error) {
 	flag.Parse()
 
 	// Проверка пути к обработанным файлам изображений
@@ -106,7 +101,7 @@ func GetData() ([]Path, processor.ImgConf, error) {
 		return nil, nil, errors.New("Wrong suffix value")
 	}
 
-	var paths []Path
+	var paths []processor.Path
 	if sourceInfo.IsDir() {
 		sourceFiles, err := os.ReadDir(source)
 		if err != nil {
@@ -120,7 +115,7 @@ func GetData() ([]Path, processor.ImgConf, error) {
 					return nil, nil, fmt.Errorf("Source file %s absolute path error. %s", file.Name(), err)
 				}
 				newDestination := GetDestination(destAbs, file.Name(), suffix)
-				paths = append(paths, Path{sourceAbs, newDestination})
+				paths = append(paths, processor.Path{Source: sourceAbs, Destination: newDestination})
 			}
 		}
 		if len(paths) == 0 {
@@ -133,7 +128,7 @@ func GetData() ([]Path, processor.ImgConf, error) {
 				return nil, nil, fmt.Errorf("Source file absolute path error. %s", err)
 			}
 			newDestination := GetDestination(destAbs, source, suffix)
-			paths = append(paths, Path{sourceAbs, newDestination})
+			paths = append(paths, processor.Path{Source: sourceAbs, Destination: newDestination})
 		} else {
 			return nil, nil, fmt.Errorf("Source file is not an image. %s", err)
 		}
