@@ -49,14 +49,6 @@ func init() {
 	flag.IntVar(&matrixSize, "matrix", defaultMatrixSize, usageMatrixSize)
 }
 
-func isImage(p string) bool {
-	ext := filepath.Ext(p)
-	if ext == ".jpeg" || ext == ".jpg" || ext == ".png" || ext == ".gif" {
-		return true
-	}
-	return false
-}
-
 func GetDestination(dest, nameExt, suffix string) string {
 	ext := filepath.Ext(nameExt)
 	name := strings.TrimSuffix(nameExt, ext)
@@ -109,7 +101,7 @@ func GetData() ([]processor.Path, processor.ImgConf, error) {
 		}
 
 		for _, file := range sourceFiles {
-			if !file.IsDir() && isImage(file.Name()) {
+			if !file.IsDir() && validator.IsImage(file.Name()) {
 				sourceAbs, err := filepath.Abs(filepath.Join(source, file.Name()))
 				if err != nil {
 					return nil, nil, fmt.Errorf("Source file %s absolute path error. %s", file.Name(), err)
@@ -122,7 +114,7 @@ func GetData() ([]processor.Path, processor.ImgConf, error) {
 			return nil, nil, fmt.Errorf("Source directory does not have image files. %s", err)
 		}
 	} else {
-		if isImage(source) {
+		if validator.IsImage(source) {
 			sourceAbs, err := filepath.Abs(source)
 			if err != nil {
 				return nil, nil, fmt.Errorf("Source file absolute path error. %s", err)
